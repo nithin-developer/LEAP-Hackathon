@@ -6,6 +6,8 @@ import { FontProvider } from "./context/font-context";
 import { ThemeProvider } from "./context/theme-context";
 import "./index.css";
 import App from "./App";
+import { Agentation } from "agentation";
+
 
 // Attach listener once to run after (re)hydration
 const auth = useAuthStore.getState().auth;
@@ -41,8 +43,9 @@ if (!rootElement.innerHTML) {
       <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
         <FontProvider>
           <App />
+          {import.meta.env.DEV && <Agentation />}
         </FontProvider>
-      </ThemeProvider>
+      </ThemeProvider>  
     </StrictMode>
   );
 }

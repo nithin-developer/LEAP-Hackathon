@@ -1,6 +1,7 @@
 import { IconLayoutDashboard } from "@tabler/icons-react";
 import {
   Activity,
+  Package,
   Settings,
 } from "lucide-react";
 
@@ -29,6 +30,7 @@ export const sidebarData: SidebarData = {
           url: "/",
           icon: IconLayoutDashboard,
         },
+        { title: "Crop Batches", url: "/batches", icon: Package },
         { title: "Crop Journey", url: "/crop-journey", icon: Activity },
       ],
     },

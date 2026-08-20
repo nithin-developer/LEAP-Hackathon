@@ -20,6 +20,8 @@ import MaintenanceError from "@/pages/errors/maintenance-error";
 import { ProtectedRoute } from "@/components/auth/protected-route";
 
 // MandiTrace Modules
+import BatchesPage from "@/pages/batches";
+import BatchDetailsPage from "@/pages/batches/details";
 import CropJourney from "@/pages/crop-journey";
 import Settings from "./pages/settings";
 import SettingsAccount from "./pages/settings/account";
@@ -117,6 +119,8 @@ function App() {
             <Route index element={<Dashboard />} />
 
             {/* MandiTrace Modules */}
+            <Route path="batches" element={<ProtectedRoute><BatchesPage /></ProtectedRoute>} />
+            <Route path="batches/:id" element={<ProtectedRoute><BatchDetailsPage /></ProtectedRoute>} />
             <Route path="crop-journey" element={<ProtectedRoute><CropJourney /></ProtectedRoute>} />
 
             {/* Settings Routes - Available for all authenticated users */}

@@ -3,14 +3,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 from app.database import init_db
-from app.routes import auth
+from app.routes import auth, batch
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Initialize database connection on startup
     await init_db()
     yield
-    # Clean up on shutdown if needed
 
 app = FastAPI(title="MandiTrace API", lifespan=lifespan)
 
@@ -24,6 +23,7 @@ app.add_middleware(
 )
 
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
+app.include_router(batch.router, prefix="/api", tags=["batches"])
 
 @app.get("/")
 async def root():

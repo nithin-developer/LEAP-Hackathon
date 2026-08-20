@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+motor
+beanie
+google-auth
+requests
+python-dotenv
+pyjwt
+pydantic[email]
+pydantic-settings

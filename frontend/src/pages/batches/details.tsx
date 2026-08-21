@@ -25,10 +25,13 @@ import {
   Wifi,
   WifiOff,
   Navigation,
+  Download,
+  FileText,
 } from "lucide-react";
 import { toast } from "sonner";
 import { fetchBatchById, updateBatchStatus, Batch } from "@/api/batch";
 import { fetchLiveSensorData, SensorDataPayload } from "@/api/iot";
+import { exportBatchToCSV, exportBatchToPDF } from "@/utils/export";
 
 import { Header } from "@/components/layout/header";
 import { Search } from "@/components/search";
@@ -250,9 +253,33 @@ export default function BatchDetailsPage() {
               </div>
 
               {/* Top Action Buttons */}
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={() => setQrOpen(true)} className="gap-1 text-xs">
-                  <QrCode className="h-4 w-4" /> Traceability QR
+              <div className="flex flex-wrap items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    exportBatchToCSV(batch, telemetryHistory, liveSensorData);
+                    toast.success("Batch Telemetry CSV exported!");
+                  }}
+                  className="gap-1.5 text-xs border-emerald-500/30 hover:border-emerald-500 hover:text-emerald-600 dark:hover:text-emerald-400"
+                >
+                  <Download className="h-3.5 w-3.5" /> Export CSV
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    exportBatchToPDF(batch, telemetryHistory, liveSensorData);
+                    toast.success("Batch Branded PDF Report generated!");
+                  }}
+                  className="gap-1.5 text-xs border-primary/30 hover:border-primary hover:text-primary"
+                >
+                  <FileText className="h-3.5 w-3.5 text-primary" /> Export PDF Report
+                </Button>
+
+                <Button variant="outline" size="sm" onClick={() => setQrOpen(true)} className="gap-1.5 text-xs">
+                  <QrCode className="h-3.5 w-3.5" /> Traceability QR
                 </Button>
 
                 <DropdownMenu>

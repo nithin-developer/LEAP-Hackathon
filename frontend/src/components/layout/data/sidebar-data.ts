@@ -18,7 +18,7 @@ export const sidebarData: SidebarData = {
   teams: [
     {
       name: "MandiTrace",
-      logo: "/src/assets/vvce.png",
+      logo: "/src/assets/farmer.jpg",
       plan: "Farmer Dashboard",
     },
   ],
@@ -33,7 +33,7 @@ export const sidebarData: SidebarData = {
         },
         { title: "Crop Batches", url: "/batches", icon: Package },
         { title: "Harvest Advisor", url: "/harvest-advisor", icon: Sparkles, roles: ["farmer"] },
-        { title: "Crop Journey", url: "/crop-journey", icon: Activity },
+        // { title: "Crop Journey", url: "/crop-journey", icon: Activity },
       ],
     },
     {

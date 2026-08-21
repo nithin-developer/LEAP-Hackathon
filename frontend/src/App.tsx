@@ -23,6 +23,7 @@ import { ProtectedRoute } from "@/components/auth/protected-route";
 import BatchesPage from "@/pages/batches";
 import BatchDetailsPage from "@/pages/batches/details";
 import CropJourney from "@/pages/crop-journey";
+import HarvestAdvisorPage from "@/pages/harvest-advisor";
 import Settings from "./pages/settings";
 import SettingsAccount from "./pages/settings/account";
 import SettingsAppearance from "./pages/settings/appearance";
@@ -121,6 +122,7 @@ function App() {
             {/* MandiTrace Modules */}
             <Route path="batches" element={<ProtectedRoute><BatchesPage /></ProtectedRoute>} />
             <Route path="batches/:id" element={<ProtectedRoute><BatchDetailsPage /></ProtectedRoute>} />
+            <Route path="harvest-advisor" element={<ProtectedRoute requiredRoles={["farmer"]}><HarvestAdvisorPage /></ProtectedRoute>} />
             <Route path="crop-journey" element={<ProtectedRoute><CropJourney /></ProtectedRoute>} />
 
             {/* Settings Routes - Available for all authenticated users */}

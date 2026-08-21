@@ -2,6 +2,7 @@ import { useState } from "react";
 import { UserAuthForm } from "./components/user-auth-form";
 import { Sprout, Wheat, TrendingUp, Shield, BarChart3 } from "lucide-react";
 import { cn } from "@/utils/utils";
+import Silk from "@/components/aurora";
 
 type Role = "farmer" | "mandi_owner";
 
@@ -9,74 +10,49 @@ export default function SignIn() {
   const [selectedRole, setSelectedRole] = useState<Role>("farmer");
 
   return (
-    <div className="relative grid h-svh lg:grid-cols-[1fr_480px] xl:grid-cols-[1fr_520px]">
+    <div className="relative container grid h-svh flex-col items-center justify-center lg:max-w-none lg:grid-cols-2 lg:px-0">
       {/* ── Left Panel ── */}
-      <div className="relative hidden overflow-hidden bg-gradient-to-br from-green-900 via-green-800 to-emerald-900 lg:flex lg:flex-col">
-        {/* Decorative background pattern */}
-        <div className="pointer-events-none absolute inset-0 opacity-[0.04]">
-          <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" strokeWidth="1" />
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#grid)" />
-          </svg>
+      <div className="bg-muted relative hidden h-full flex-col p-10 text-white lg:flex dark:border-r">
+
+        <div className="absolute inset-0">
+          <Silk
+            speed={5}
+            scale={1}
+            color="#00cc6a"
+            noiseIntensity={1.5}
+            rotation={0}
+          />
         </div>
 
-        {/* Decorative gradient circles */}
-        <div className="pointer-events-none absolute -left-32 -top-32 h-96 w-96 rounded-full bg-green-500/20 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-emerald-400/15 blur-3xl" />
-
-        {/* Content */}
-        <div className="relative z-10 flex flex-1 flex-col justify-between p-10 xl:p-14">
-          {/* Logo */}
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 backdrop-blur-sm">
-              <Sprout className="h-5 w-5 text-green-300" />
+        <div className="relative z-20 mt-auto">
+          <div className="bg-black/20 backdrop-blur-sm p-8 rounded-xl border border-white/10 shadow-xl space-y-3">
+            <div className="flex items-center gap-3">
+              {/* <img src={Logo} alt="Logo" className="h-auto w-30 object-contain" /> */}
+              <div className="text-center mx-auto">
+                <h2 className="text-3xl font-bold text-white leading-tight">
+                  MandiTrace
+                </h2>
+                <p className="text-sm text-white/80">Farm to Mandi Intelligence Platform</p>
+              </div>
             </div>
-            <span className="text-xl font-semibold tracking-tight text-white">
-              MandiTrace
-            </span>
-          </div>
 
-          {/* Hero section */}
-          <div className="space-y-8">
+            <div className="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+
             <div className="space-y-4">
-              <h1 className="text-4xl font-bold leading-[1.15] tracking-tight text-white xl:text-5xl">
-                From Seed to Sale,{" "}
-                <span className="bg-gradient-to-r from-green-300 to-emerald-300 bg-clip-text text-transparent">
-                  Every Step Traced.
-                </span>
-              </h1>
-              <p className="max-w-md text-base leading-relaxed text-green-100/70 xl:text-lg">
-                Track your crop journey, connect with mandis, and get
-                transparent, fair prices — all in one place.
+              <h3 className="text-xl font-semibold text-white">
+                Welcome Back,
+              </h3>
+              <p className="text-base text-white/90 leading-relaxed">
+                Track your crop journey from farm to mandi. AI harvest advice, IoT telemetry, and fair trade tracking.
               </p>
             </div>
 
-            {/* Feature pills */}
-            <div className="flex flex-wrap gap-3">
-              {[
-                { icon: TrendingUp, label: "Live Pricing" },
-                { icon: Shield, label: "Verified Transactions" },
-                { icon: BarChart3, label: "Crop Analytics" },
-              ].map(({ icon: Icon, label }) => (
-                <div
-                  key={label}
-                  className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-green-100/80 backdrop-blur-sm"
-                >
-                  <Icon className="h-3.5 w-3.5" />
-                  {label}
-                </div>
-              ))}
+            <div className="pt-4 border-t border-white/10">
+              <p className="text-sm text-white font-bold">
+                &copy; Designed & Developed by NS Teams, All Rights Reserved
+              </p>
             </div>
           </div>
-
-          {/* Footer */}
-          <p className="text-xs text-green-100/40">
-            © 2026 MandiTrace. Built for Indian farmers.
-          </p>
         </div>
       </div>
 
@@ -92,7 +68,7 @@ export default function SignIn() {
           </span>
         </div>
 
-        <div className="w-full max-w-[380px] space-y-8">
+        <div className="w-full max-w-[380px] space-y-6">
           {/* Heading */}
           <div className="space-y-2 text-center">
             <h2 className="text-2xl font-semibold tracking-tight">

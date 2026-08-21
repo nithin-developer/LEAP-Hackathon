@@ -77,6 +77,7 @@ import {
   MapPin,
   X,
   MoreHorizontal,
+  Building2,
 } from "lucide-react";
 
 export default function BatchesPage() {
@@ -84,6 +85,7 @@ export default function BatchesPage() {
   const auth = useAuth();
   const user = auth.user;
   const isFarmer = user?.role === "farmer";
+  const isMandiOwner = user?.role === "mandi_owner";
 
   // Data states
   const [batches, setBatches] = React.useState<Batch[]>([]);
@@ -107,7 +109,7 @@ export default function BatchesPage() {
     notes: "",
   });
 
-  // Load Mandi Options
+  // Load Mandi Options for Farmer
   React.useEffect(() => {
     if (isFarmer) {
       fetchMandiOptions()
@@ -156,7 +158,7 @@ export default function BatchesPage() {
         ...formData,
         harvest_date: new Date(formData.harvest_date).toISOString(),
       });
-      toast.success("Batch created");
+      toast.success("Crop batch created and assigned successfully!");
       setIsCreateOpen(false);
       setFormData({
         crop_name: "",
@@ -187,10 +189,14 @@ export default function BatchesPage() {
     }
   };
 
-  // Mandi options for filter dropdown
-  const mandiFilterOptions = React.useMemo(() => {
-    return Array.from(new Set(batches.map((b) => b.mandi_name).filter(Boolean))).sort();
-  }, [batches]);
+  // Filter options for Mandi filter (for Farmers) or Farmer filter (for Mandi Owners)
+  const filterOptions = React.useMemo(() => {
+    if (isFarmer) {
+      return Array.from(new Set(batches.map((b) => b.mandi_name).filter(Boolean))).sort();
+    } else {
+      return Array.from(new Set(batches.map((b) => b.farmer_name).filter(Boolean))).sort();
+    }
+  }, [batches, isFarmer]);
 
   // Status Badge Helper
   const renderStatusBadge = (status: string) => {
@@ -240,7 +246,7 @@ export default function BatchesPage() {
     });
   }, []);
 
-  // TanStack Columns definition
+  // TanStack Columns definition tailored to user role
   const columns = React.useMemo<ColumnDef<Batch>[]>(
     () => [
       {
@@ -271,38 +277,54 @@ export default function BatchesPage() {
           </span>
         ),
       },
-      {
-        accessorKey: "farmer_name",
-        header: "Farmer",
-        cell: ({ row }) => (
-          <div className="flex flex-col text-xs">
-            <span className="font-medium flex items-center gap-1">
-              <User className="h-3 w-3 text-muted-foreground" /> {row.original.farmer_name}
-            </span>
-            <span className="text-muted-foreground flex items-center gap-1">
-              <MapPin className="h-3 w-3" /> {row.original.farmer_location}
-            </span>
-          </div>
-        ),
-        meta: { className: "hidden md:table-cell" },
-      },
-      {
-        accessorKey: "mandi_name",
-        header: "Assigned Mandi",
-        cell: ({ row }) => (
-          <div className="flex flex-col text-xs">
-            <span className="font-medium">{row.original.mandi_name}</span>
-            {row.original.mandi_location && (
-              <span className="text-muted-foreground">{row.original.mandi_location}</span>
-            )}
-          </div>
-        ),
-        filterFn: (row, columnId, value) => {
-          if (!value) return true;
-          return row.getValue(columnId) === value;
-        },
-        meta: { className: "hidden lg:table-cell" },
-      },
+      // If Mandi Owner, show Farmer Origin column
+      ...(isMandiOwner || !isFarmer
+        ? [
+            {
+              accessorKey: "farmer_name",
+              header: "Farmer Origin",
+              cell: ({ row }: any) => (
+                <div className="flex flex-col text-xs">
+                  <span className="font-medium flex items-center gap-1">
+                    <User className="h-3 w-3 text-muted-foreground" /> {row.original.farmer_name}
+                  </span>
+                  <span className="text-muted-foreground flex items-center gap-1">
+                    <MapPin className="h-3 w-3" /> {row.original.farmer_location}
+                  </span>
+                </div>
+              ),
+              filterFn: (row: any, columnId: string, value: any) => {
+                if (!value) return true;
+                return row.getValue(columnId) === value;
+              },
+              meta: { className: "hidden md:table-cell" },
+            } as ColumnDef<Batch>,
+          ]
+        : []),
+      // If Farmer, show Assigned Mandi column
+      ...(isFarmer
+        ? [
+            {
+              accessorKey: "mandi_name",
+              header: "Assigned Mandi",
+              cell: ({ row }: any) => (
+                <div className="flex flex-col text-xs">
+                  <span className="font-medium flex items-center gap-1">
+                    <Building2 className="h-3 w-3 text-muted-foreground" /> {row.original.mandi_name}
+                  </span>
+                  {row.original.mandi_location && (
+                    <span className="text-muted-foreground">{row.original.mandi_location}</span>
+                  )}
+                </div>
+              ),
+              filterFn: (row: any, columnId: string, value: any) => {
+                if (!value) return true;
+                return row.getValue(columnId) === value;
+              },
+              meta: { className: "hidden lg:table-cell" },
+            } as ColumnDef<Batch>,
+          ]
+        : []),
       {
         accessorKey: "harvest_date",
         header: "Harvest Date",
@@ -380,7 +402,7 @@ export default function BatchesPage() {
         meta: { className: "text-right" },
       },
     ],
-    [navigate]
+    [navigate, isFarmer, isMandiOwner]
   );
 
   const table = useReactTable({
@@ -395,19 +417,20 @@ export default function BatchesPage() {
     getPaginationRowModel: getPaginationRowModel(),
   });
 
-  const mandiFilter = table.getColumn("mandi_name")?.getFilterValue() as string | undefined;
-  const statusFilter = table.getColumn("status")?.getFilterValue() as string | undefined;
-  const hasActiveFilters = !!globalFilter || !!mandiFilter || !!statusFilter;
+  const secondaryFilterCol = isFarmer ? "mandi_name" : "farmer_name";
+  const secondaryFilterVal = table.getColumn(secondaryFilterCol)?.getFilterValue() as string | undefined;
+  const statusFilterVal = table.getColumn("status")?.getFilterValue() as string | undefined;
+  const hasActiveFilters = !!globalFilter || !!secondaryFilterVal || !!statusFilterVal;
 
   const clearFilters = () => {
     setGlobalFilter("");
-    table.getColumn("mandi_name")?.setFilterValue(undefined);
+    table.getColumn(secondaryFilterCol)?.setFilterValue(undefined);
     table.getColumn("status")?.setFilterValue(undefined);
   };
 
   return (
     <>
-      {/* Top Navigation Header matching Trainers page */}
+      {/* Top Header Layout */}
       <Header>
         <SearchHeader />
         <div className="ml-auto flex items-center space-x-4">
@@ -417,14 +440,22 @@ export default function BatchesPage() {
       </Header>
 
       <div className="container mx-auto p-6 space-y-6">
-        {/* Title and Top Action Bar */}
+        {/* Title and Top Action Bar tailored per role */}
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight">Crop Batches</h2>
+            <h2 className="text-2xl font-bold tracking-tight">
+              {isFarmer
+                ? "My Crop Batches"
+                : isMandiOwner
+                ? "Mandi Incoming Batches"
+                : "Crop Batches"}
+            </h2>
             <p className="text-sm text-muted-foreground">
               {isFarmer
-                ? "Manage and track your crop batches assigned to Mandis."
-                : "Manage and review crop batches assigned to your Mandi."}
+                ? "Manage and track your crop shipments assigned to Mandis."
+                : isMandiOwner
+                ? "Review and manage crop batches assigned to your Mandi yard."
+                : "Directory of crop batches across farmers and Mandis."}
             </p>
           </div>
           <div className="flex gap-2">
@@ -472,22 +503,22 @@ export default function BatchesPage() {
                   />
                 </div>
                 <div className="flex gap-2 flex-wrap">
-                  {/* Mandi Filter */}
+                  {/* Secondary Filter: Mandi (for Farmer) or Farmer (for Mandi Owner) */}
                   <Select
-                    value={mandiFilter ?? undefined}
+                    value={secondaryFilterVal ?? undefined}
                     onValueChange={(v) => {
-                      if (v === "__all") table.getColumn("mandi_name")?.setFilterValue(undefined);
-                      else table.getColumn("mandi_name")?.setFilterValue(v);
+                      if (v === "__all") table.getColumn(secondaryFilterCol)?.setFilterValue(undefined);
+                      else table.getColumn(secondaryFilterCol)?.setFilterValue(v);
                     }}
                   >
                     <SelectTrigger className="h-9 w-[150px]">
-                      <SelectValue placeholder="Mandi" />
+                      <SelectValue placeholder={isFarmer ? "Mandi" : "Farmer"} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="__all">All Mandis</SelectItem>
-                      {mandiFilterOptions.map((mandi) => (
-                        <SelectItem key={mandi} value={mandi}>
-                          {mandi}
+                      <SelectItem value="__all">{isFarmer ? "All Mandis" : "All Farmers"}</SelectItem>
+                      {filterOptions.map((opt) => (
+                        <SelectItem key={opt} value={opt}>
+                          {opt}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -495,7 +526,7 @@ export default function BatchesPage() {
 
                   {/* Status Filter */}
                   <Select
-                    value={statusFilter ?? undefined}
+                    value={statusFilterVal ?? undefined}
                     onValueChange={(v) => {
                       if (v === "__all") table.getColumn("status")?.setFilterValue(undefined);
                       else table.getColumn("status")?.setFilterValue(v);
@@ -529,7 +560,7 @@ export default function BatchesPage() {
               </div>
             </div>
 
-            {/* Table Container matching Trainers Table */}
+            {/* Table Container */}
             <div className="rounded-md border overflow-x-auto">
               <Table className="min-w-[720px]">
                 <TableHeader>
@@ -588,7 +619,9 @@ export default function BatchesPage() {
                       >
                         {hasActiveFilters
                           ? "No batches match the current filters."
-                          : "No batches found."}
+                          : isFarmer
+                          ? "No crop batches created yet. Click 'Add Batch' above to create one."
+                          : "No incoming crop batches assigned to your Mandi yet."}
                         {hasActiveFilters && (
                           <div className="mt-2">
                             <Button
@@ -613,7 +646,7 @@ export default function BatchesPage() {
         )}
       </div>
 
-      {/* Add Batch Dialog matching TrainerFormDialog */}
+      {/* Add Batch Dialog */}
       <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
         <DialogContent className="sm:max-w-xl">
           <DialogHeader>

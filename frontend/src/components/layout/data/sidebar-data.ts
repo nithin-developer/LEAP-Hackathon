@@ -3,6 +3,7 @@ import {
   Activity,
   Package,
   Settings,
+  Sparkles,
 } from "lucide-react";
 
 import { IconPalette, IconTool } from "@tabler/icons-react";
@@ -31,6 +32,7 @@ export const sidebarData: SidebarData = {
           icon: IconLayoutDashboard,
         },
         { title: "Crop Batches", url: "/batches", icon: Package },
+        { title: "Harvest Advisor", url: "/harvest-advisor", icon: Sparkles, roles: ["farmer"] },
         { title: "Crop Journey", url: "/crop-journey", icon: Activity },
       ],
     },

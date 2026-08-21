@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 from app.database import init_db
-from app.routes import auth, batch
+from app.routes import auth, batch, harvest_intelligence, iot
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -24,6 +24,8 @@ app.add_middleware(
 
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(batch.router, prefix="/api", tags=["batches"])
+app.include_router(harvest_intelligence.router, prefix="/api", tags=["harvest-intelligence"])
+app.include_router(iot.router, tags=["iot"])
 
 @app.get("/")
 async def root():

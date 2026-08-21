@@ -10,7 +10,7 @@ const char *WIFI_SSID = "vivov30";
 const char *WIFI_PASSWORD = "1527750498";
 
 const char *SERVER_URL =
-    "https://8000-kode-ws-632342849.hebbale.academy/sensor-data";
+    "https://8080-kode-ws-0a787a829.hebbale.academy/sensor-data";
 
 #define DHT_PIN 4
 #define DHT_TYPE DHT11
